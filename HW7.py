@@ -63,7 +63,7 @@ def make_players_table(data, cur, conn):
         birthyear = int(player['dateOfBirth'][0:4])
         nationality = player['nationality']
         cur.execute("INSERT OR IGNORE INTO Players (id, name, position_id, birthyear, nationality) VALUES (?,?,?,?,?)", (id,name,position_id,birthyear,nationality))
-        conn.commit()
+    conn.commit()
     pass
 
 ## [TASK 2]: 10 points
@@ -77,6 +77,15 @@ def make_players_table(data, cur, conn):
         # the player's name, their position_id, and their nationality.
 
 def nationality_search(countries, cur, conn):
+    player_list = []
+    for country in countries:
+        cur.execute('SELECT name, position_id, nationality FROM Players WHERE nationality = ?', (country,))
+        players = cur.fetchall()
+        for player in players:
+            player_list.append(player)
+    conn.commit
+    print(player_list)
+    return player_list
     pass
 
 ## [TASK 3]: 10 points
@@ -184,16 +193,16 @@ class TestAllMethods(unittest.TestCase):
         self.assertIs(type(players_list[0][3]), int)
         self.assertIs(type(players_list[0][4]), str)
 
-    # def test_nationality_search(self):
-    #     x = sorted(nationality_search(['England'], self.cur, self.conn))
-    #     self.assertEqual(len(x), 11)
-    #     self.assertEqual(len(x[0]), 3)
-    #     self.assertEqual(x[0][0], "Aaron Wan-Bissaka")
+    def test_nationality_search(self):
+        x = sorted(nationality_search(['England'], self.cur, self.conn))
+        self.assertEqual(len(x), 11)
+        self.assertEqual(len(x[0]), 3)
+        self.assertEqual(x[0][0], "Aaron Wan-Bissaka")
 
-    #     y = sorted(nationality_search(['Brazil'], self.cur, self.conn))
-    #     self.assertEqual(len(y), 3)
-    #     self.assertEqual(y[2],('Fred', 2, 'Brazil'))
-    #     self.assertEqual(y[0][1], 3)
+        y = sorted(nationality_search(['Brazil'], self.cur, self.conn))
+        self.assertEqual(len(y), 3)
+        self.assertEqual(y[2],('Fred', 2, 'Brazil'))
+        self.assertEqual(y[0][1], 3)
 
     # def test_birthyear_nationality_search(self):
 
